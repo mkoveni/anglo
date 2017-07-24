@@ -1,0 +1,52 @@
+{% extends 'layouts/base_layout.twig' %} {% block content %}
+    <div class="row">
+        <div class="module module-login span4 offset4">
+            <form class="form-vertical" action="{{ path_for('auth.login') }}" method="post">
+                <div class="module-head">
+                    <h3>Sign In</h3>
+                </div>
+                <div class="module-body">
+                    <div class="control-group {{ errors.email ? 'error': ''}}">
+                        <div class="controls row-fluid">
+                            <input class="span12" name="email" type="text" id="inputEmail" placeholder="Email">
+                        </div>
+
+                        {% if errors.email %}
+                            <span class="help-block">
+                                    {{ errors.email | first }}
+                                </span>
+                        {% endif %}
+                    </div>
+                    <div class="control-group {{ errors.password ? 'error': ''}}">
+                        <div class="controls row-fluid">
+                            <input class="span12" name="password" type="password" id="inputPassword" placeholder="Password">
+                        </div>
+                        {% if errors.password %}
+                            <span class="help-block">
+                                    {{ errors.password | first }}
+                                </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="module-foot">
+                    <div class="control-group">
+                        <div class="controls clearfix">
+                            <button type="submit" class="btn btn-primary pull-right">Login</button>
+                            <label class="checkbox">
+                                <input type="checkbox"> Remember me
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="module-foot">
+                    <div class="control-group">
+                        <div class="controls clearfix">
+                            <p class=""><a href="#!">forgot password?</a></p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'layouts/base_layout.twig' %} {% block content %}
+<div class="row">
+    <div class="span3">
+        {{ include('layouts/partials/sidebar.twig') }}
+    </div>
+    <!--/.span3-->
+    <div class="span9">
+        <div class="content">
+
+            {% block area %} {% endblock %}
+
+            <!--/.module-->
+        </div>
+        <!--/.content-->
+    </div>
+<!--/.span9-->
+</div>
+</div>
+{% endblock %}

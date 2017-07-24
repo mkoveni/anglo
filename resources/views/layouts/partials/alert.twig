@@ -1,0 +1,18 @@
+{% if session.has('danger') %}
+    <div class="alert alert-danger">
+        {{ session.flash('danger') }}
+    </div>
+{% elseif session.has('info') %}
+    <div class="alert alert-info">
+        {{ session.flash('info') }}
+    </div>
+{% elseif session.has('primary') %}
+    <div class="alert alert-primary">
+        {{ session.flash('primary') }}
+    </div>
+{% elseif session.has('warning') %}
+    <div class="alert alert-warning">
+        {{ session.flash('warning') }}
+    </div>
+{% endif %}
+

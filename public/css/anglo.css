@@ -1,0 +1,28 @@
+img.logo{
+    max-width: 200px;
+    margin-top:10px;
+    margin-bottom: 10px;
+}
+
+.navbar {
+    background: #003468;
+}
+
+aside.left {background-color:#eee;}
+.container-fluid{
+    margin: 0;
+}
+
+.jumbo {
+  background: #003468;
+  min-height: 150px;
+}
+
+.jumbo-top{
+  border-bottom: 5px #BE3019 solid;
+}
+
+.jumbo-bottom{
+  border-top: 5px #BE3019 solid;
+}
+

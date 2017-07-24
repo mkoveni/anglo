@@ -1,0 +1,22 @@
+<div class="sidebar">
+    <ul class="widget widget-menu unstyled">
+        <li class="active"><a href="{{ path_for('dashboard') }}"><i class="menu-icon icon-dashboard"></i>Dashboard
+                                </a></li>
+        <li><a href="#"><i class="menu-icon icon-bullhorn"></i>Overview</a></li>
+        <li><a href="#"><i class="menu-icon icon-tasks"></i>Menu </a></li>
+        <li><a href="{{ path_for('maps') }}"><i class="menu-icon icon-map-marker"></i>Maps </a></li>
+        <li><a class="collapsed" data-toggle="collapse" href="#togglePages"><i class="menu-icon icon-cog">
+                                </i><i class="icon-chevron-down pull-right"></i><i class="icon-chevron-up pull-right">
+                                </i>More Menus </a>
+            <ul id="togglePages" class="collapse unstyled">
+                <li><a href="#"><i class="icon-inbox"></i>drop 1 </a></li>
+                <li><a href="#"><i class="icon-inbox"></i>drop 2 </a></li>
+                <li><a href="#"><i class="icon-inbox"></i>drop 3 </a></li>
+            </ul>
+        </li>
+        <li><a href="#"><i class="menu-icon icon-signout"></i>Logout </a></li>
+    </ul>
+    <!--/.widget-nav-->
+
+</div>
+<!--/.sidebar-->
