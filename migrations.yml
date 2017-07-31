@@ -1,0 +1,4 @@
+name: Anglo migrations
+migrations_namespace: Anglo\Migrations
+table_name: doctrine_migrations_versions
+migrations_directory: app/Migrations

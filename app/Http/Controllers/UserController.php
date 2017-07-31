@@ -9,7 +9,7 @@
 namespace Anglo\Http\Controllers;
 
 
-use Anglo\Models\Role;
+use Anglo\Models\Roles;
 use Anglo\Models\User;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -22,7 +22,7 @@ class UserController extends Controller
         $user->setName('Rivalani Simon Mkoveni');
         $user->setEmail('mkoveni@gmail.com');
         $user->setPassword(password_hash('Simon123', PASSWORD_DEFAULT));
-        $user->setRole($this->entityManager->find(Role::class, 9));
+        $user->setRole($this->entityManager->find(Roles::class, 9));
         $user->setToken('lalala');
 
         $this->entityManager->persist($user);

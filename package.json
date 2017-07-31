@@ -30,6 +30,7 @@
     "axios": "^0.16.2",
     "highcharts": "^5.0.12",
     "ol": "^4.2.0",
+    "ol3-layerswitcher": "^1.1.2",
     "openlayers": "^4.2.0"
   }
 }

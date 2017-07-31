@@ -3,7 +3,7 @@
 
 namespace Anglo\Http\Controllers;
 
-use Anglo\Models\Role;
+use Anglo\Models\Roles;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -11,7 +11,7 @@ class RoleController extends Controller
 {
     public function store(Request $request, Response $response)
     {
-        $role = new Role();
+        $role = new Roles();
         $role->setName('Admin');
 
         $this->entityManager->persist($role);

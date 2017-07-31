@@ -8,12 +8,12 @@
 
 namespace Anglo\Transformers;
 
-use Anglo\Models\Role;
+use Anglo\Models\Roles;
 use League\Fractal\TransformerAbstract;
 
 class RoleTransfomer extends TransformerAbstract
 {
-    public function transform(Role $role)
+    public function transform(Roles $role)
     {
         return [
             'id'=> $role->getId(),

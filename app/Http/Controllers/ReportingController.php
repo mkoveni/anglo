@@ -21,4 +21,9 @@ class ReportingController extends Controller
     {
         throw new \Exception('Could not connect');
     }
+
+    public function getGraphs(Response $response)
+    {
+        return $this->view->render($response, 'graphs/graphs.twig');
+    }
 }

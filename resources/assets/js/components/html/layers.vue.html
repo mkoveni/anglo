@@ -1,11 +1,223 @@
 <template>
-    <div id="map"></div>
+    <div class="row row-fluid">
+        <div class="span10">
+            <div id="map" class="map"></div>
+            <div id="popup" class="ol-popup">
+                <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                <div id="popup-content"></div>
+            </div>
+        </div>
+        <div class="span2">
+            <ul id="layer-switcher" class="nav nav-list">
+                <li class="nav-header">Layers
+
+                </li>
+                <li class="active"><a class="collapsed" data-toggle="collapse" href="#scg_layers">More Menus </a>
+                    <ul id="scg_layers" class="collapse unstyled">
+                        <li><a href="#"><i class="fa fa-eye" aria-hidden="true"></i> drop</a></li>
+                        <li><a href="#"><i class="icon-inbox"></i>drop 2 </a></li>
+                        <li><a href="#"><i class="icon-inbox"></i>drop 3 </a></li>
+                    </ul>
+                </li>
+                <li><a href="#">Base Layers</a></li>
+
+            </ul>
+        </div>
+    </div>
+
 </template>
 
+<script src="../layers.ts"></script>
 <style>
-    #map{
-        width:100%;
+    body {}
+
+    .map {
         height: 400px;
+        width: 100%;
+        background: url(https://www.1map.co.za/images/map-background.jpg) repeat;
+    }
+
+    .ol-attribution {
+        max-width: calc(100% - 3em);
+    }
+
+    .ol-control button,
+    .ol-attribution,
+    .ol-scale-line-inner {
+        font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif;
+    }
+
+    #tags {
+        display: none;
+    }
+
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    li,
+    td,
+    th {
+        font-family: Quattrocento Sans;
+    }
+
+    .navbar-inverse .navbar-inner {
+        background: #1F6B75;
+    }
+
+    .navbar-inverse .brand {
+        color: white;
+        padding: 5px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    label,
+    input,
+    button,
+    select,
+    textarea {
+        font-size: 14px;
+        font-weight: normal;
+        line-height: 20px;
+    }
+
+    label,
+    select,
+    button,
+    input[type="button"],
+    input[type="reset"],
+    input[type="submit"],
+    input[type="radio"],
+    input[type="checkbox"] {
+        cursor: pointer;
+    }
+
+    input,
+    textarea,
+    .uneditable-input {
+        width: 300px;
+    }
+
+    input,
+    button,
+    select,
+    textarea {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="password"],
+    input[type="datetime"],
+    input[type="datetime-local"],
+    input[type="date"],
+    input[type="month"],
+    input[type="time"],
+    input[type="week"],
+    input[type="number"],
+    input[type="email"],
+    input[type="url"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="color"],
+    .uneditable-input {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        -webkit-transition: border linear .2s, box-shadow linear .2s;
+        -moz-transition: border linear .2s, box-shadow linear .2s;
+        -o-transition: border linear .2s, box-shadow linear .2s;
+        transition: border linear .2s, box-shadow linear .2s;
+    }
+
+    select,
+    textarea,
+    input[type="text"],
+    input[type="password"],
+    input[type="datetime"],
+    input[type="datetime-local"],
+    input[type="date"],
+    input[type="month"],
+    input[type="time"],
+    input[type="week"],
+    input[type="number"],
+    input[type="email"],
+    input[type="url"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="color"],
+    .uneditable-input {
+        display: inline-block;
+        height: 30px;
+        padding: 4px 6px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 30px;
+        color: #555;
+        vertical-align: middle;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+
+    .ol-popup {
+        position: absolute;
+        background-color: white;
+        -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+        filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #cccccc;
+        bottom: 12px;
+        left: -2000px;
+        min-width: 280px;
+    }
+
+    .ol-popup:after,
+    .ol-popup:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .ol-popup:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+    }
+
+    .ol-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+    }
+
+    .ol-popup-closer {
+        text-decoration: none;
+        position: absolute;
+        top: 2px;
+        right: 8px;
+    }
+
+    .ol-popup-closer:after {
+        content: "✖";
+    }
+
+    .ol-attribution ul {
+        font-size: 1rem;
     }
 </style>
-<script src="../layers.ts"></script>
