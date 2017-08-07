@@ -14,34 +14,57 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+///<reference path="../../../../node_modules/@types/es6-promise/index.d.ts"/>
 import Vue from 'vue';
 import { Component, Lifecycle } from "av-ts";
-import axios from 'axios';
 import ol from 'openlayers/dist/ol-debug';
+import $ from 'jquery/dist/jquery';
 var Layers = (function (_super) {
     __extends(Layers, _super);
     function Layers() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.name = 'Simon';
+        var _this = _super.call(this) || this;
+        _this.baseGroup = new ol.layer.Group({
+            title: 'Base Layers',
+            layers: [],
+            name: 'Base Layers'
+        });
+        _this.otherGroup = new ol.layer.Group({
+            title: 'Other layers',
+            layers: [],
+            name: 'Other Layers'
+        });
+        _this.activeLayer = {
+            id: 0,
+            name: 'None'
+        };
         return _this;
     }
+    Layers.prototype.getActiveLayer = function () {
+        return this.activeLayer;
+    };
+    Layers.prototype.layerSelected = function () {
+        return this.activeLayer.id > 0;
+    };
     Layers.prototype.apiLogin = function () {
-        var _this = this;
-        axios.get('https://www.1map.co.za/api/v1/auth/login?email=simon@standardcorp.co.za&password=Simon@16024')
-            .then(function (response) {
-            _this.token = response.data.apiToken.token;
-            _this.buildLayers();
-        }).catch(function (error) {
-            console.log('we have an error');
-            _this.buildLayers();
+        var this_ = this;
+        $.ajax({
+            url: 'https://www.1map.co.za/api/v1/auth/login?email=simon@standardcorp.co.za&password=Simon@16024',
+            dataType: 'JSON',
+            method: 'GET',
+            async: false
+        }).done(function (response) {
+            this_.apiToken = response.apiToken;
+            this_.buildLayers(this_);
+            this_.initializeTree();
+        }).fail(function () {
+            alert('COULD NOT AUTHENTICATE');
         });
     };
-    Layers.prototype.buildLayers = function () {
-        var _this = this;
+    Layers.prototype.buildLayers = function (context) {
         this.ervenSource.clear();
         this.otherGroup.getLayers().clear();
         this.baseGroup.getLayers().clear();
-        if (this.token) {
+        if (this.apiToken.token) {
             var osmLayer = new ol.layer.Tile({
                 title: 'osm',
                 visible: false,
@@ -80,7 +103,7 @@ var Layers = (function (_super) {
                 source: new ol.source.TileWMS({
                     url: 'https://www.1map.co.za/api/v1/spatial/maptile/2/base',
                     params: {
-                        'token': this.token,
+                        'token': this.apiToken.token,
                         'CRS': 'EPSG:3857'
                     },
                     hidpi: false,
@@ -103,7 +126,7 @@ var Layers = (function (_super) {
                 source: new ol.source.TileWMS({
                     url: 'https://www.1map.co.za/api/v1/spatial/maptile/34/base',
                     params: {
-                        'token': this.token,
+                        'token': this.apiToken.token,
                         'CRS': 'EPSG:3857'
                     },
                     hidpi: false,
@@ -130,56 +153,59 @@ var Layers = (function (_super) {
                     crossOrigin: 'anonymous'
                 })
             });
-            this.baseGroup.getLayers().push(emptyBaseLayer);
-            this.baseGroup.getLayers().push(baseLayer);
-            this.baseGroup.getLayers().push(baseLayerNGI);
-            this.baseGroup.getLayers().push(ngiLayer);
-            this.baseGroup.getLayers().push(osmLayer);
-            axios.get('https://www.1map.co.za/api/v1/params/layer?isBaseLayer=false', {
-                params: {
-                    token: this.token
+            context.baseGroup.getLayers().push(emptyBaseLayer);
+            context.baseGroup.getLayers().push(baseLayer);
+            context.baseGroup.getLayers().push(baseLayerNGI);
+            context.baseGroup.getLayers().push(ngiLayer);
+            context.baseGroup.getLayers().push(osmLayer);
+            $.ajax({
+                url: 'https://www.1map.co.za/api/v1/params/workspace/11529/layers',
+                method: 'GET',
+                dataType: 'JSON',
+                async: false,
+                data: {
+                    token: this.apiToken.token
                 }
-            }).then(function (response) {
-                if (response && response.data.apiToken) {
-                    _this.token = response.data.apiToken.token;
+            }).done(function (response) {
+                var _this = this;
+                if (response && response.apiToken) {
+                    this.apiToken = response.apiToken;
                 }
-                if (response && response.data.result && response.data.result.layers) {
-                    for (var i = 0; i < response.data.result.layers.length; i++) {
-                        var item = response.data.result.layers[i];
-                        if (item.isBaseLayer == false) {
-                            var oSource = new ol.source.TileWMS({
-                                url: 'https://www.1map.co.za/api/v1/spatial/maptile/' + item.layerId + '/other',
-                                params: {
-                                    'token': _this.token,
-                                    'CRS': 'EPSG:3857'
-                                },
-                                hidpi: false,
-                                serverType: 'geoserver',
-                                wrapX: false,
-                                crossOrigin: 'anonymous',
-                                attributions: [
-                                    new ol.Attribution({
-                                        html: item.attribution
-                                    })
-                                ]
-                            });
-                            var oLayer = new ol.layer.Tile({
-                                title: item.layerCaption,
-                                visibleInLayerSwitcher: true,
-                                visible: false,
-                                minResolution: _this.getResolutionFromScale(item.minScale),
-                                maxResolution: _this.getResolutionFromScale(item.maxScale),
-                                minScale: item.minScale,
-                                maxScale: item.maxScale,
-                                source: oSource
-                            });
-                            _this.otherGroup.getLayers().push(oLayer);
-                        }
+                console.log('live');
+                response.result.layers.forEach(function (item) {
+                    if (item.isBaseLayer == false) {
+                        var oSource = new ol.source.TileWMS({
+                            url: 'https://www.1map.co.za/api/v1/spatial/maptile/' + item.layerId + '/other',
+                            params: {
+                                'token': _this.apiToken.token,
+                                'CRS': 'EPSG:3857'
+                            },
+                            hidpi: false,
+                            serverType: 'geoserver',
+                            wrapX: false,
+                            crossOrigin: 'anonymous',
+                            attributions: [
+                                new ol.Attribution({
+                                    html: item.attribution
+                                })
+                            ]
+                        });
+                        var oLayer = new ol.layer.Tile({
+                            id: item.layerId,
+                            title: item.layerCaption,
+                            visibleInLayerSwitcher: true,
+                            visible: false,
+                            minResolution: context.getResolutionFromScale(item.minScale),
+                            maxResolution: context.getResolutionFromScale(item.maxScale),
+                            minScale: item.minScale,
+                            maxScale: item.maxScale,
+                            source: oSource
+                        });
+                        context.otherGroup.getLayers().getArray().push(oLayer);
                     }
-                    _this.otherGroup.getLayers().push(_this.ervenLayer);
-                }
-            }).catch(function (error) {
-                _this.otherGroup.getLayers().push(_this.ervenLayer);
+                });
+            }).fail(function () {
+                context.otherGroup.getLayers().push(this.ervenLayer);
             });
         }
     };
@@ -289,206 +315,73 @@ var Layers = (function (_super) {
         // No number in array is bigger so return the last.
         return resolutions[resolutions.length - 1];
     };
-    Layers.prototype.mounted = function () {
-        /* LAYER SWITCHER*/
-        ol.control.LayerSwitcher = function (opt_options) {
-            var options = opt_options || {};
-            this.mapListeners = [];
-            var tipLabel = options.tipLabel ? opt_options.tipLabel : 'Legend';
-            this.hiddenClassName = 'ol-unselectable ol-control layer-switcher';
-            this.shownClassName = this.hiddenClassName + ' shown';
-            var element = document.createElement('div');
-            element.className = this.hiddenClassName;
-            var button = document.createElement('button');
-            button.setAttribute('title', tipLabel);
-            element.appendChild(button);
-            this.panel = document.createElement('div');
-            this.panel.className = 'panel';
-            element.appendChild(this.panel);
-            var this_ = this;
-            element.onmouseover = function (e) {
-                this_.showPanel();
-            };
-            button.onclick = function (e) {
-                this_.showPanel();
-            };
-            element.onmouseout = function (e) {
-                e = e || window.event;
-                if (!element.contains(e.toElement)) {
-                    this_.hidePanel();
-                }
-            };
-            ol.control.Control.call(this, {
-                element: element,
-                target: options.target
-            });
-        };
-        ol.inherits(ol.control.LayerSwitcher, ol.control.Control);
-        /**
-         * Show the layer panel.
-         */
-        ol.control.LayerSwitcher.prototype.showPanel = function () {
-            if (this.element.className != this.shownClassName) {
-                this.element.className = this.shownClassName;
-                this.renderPanel();
-            }
-        };
-        /**
-         * Hide the layer panel.
-         */
-        ol.control.LayerSwitcher.prototype.hidePanel = function () {
-            if (this.element.className != this.hiddenClassName) {
-                this.element.className = this.hiddenClassName;
-            }
-        };
-        /**
-         * Re-draw the layer panel to represent the current state of the layers.
-         */
-        ol.control.LayerSwitcher.prototype.renderPanel = function () {
-            this.ensureTopVisibleBaseLayerShown_();
-            while (this.panel.firstChild) {
-                this.panel.removeChild(this.panel.firstChild);
-            }
-            var ul = document.createElement('ul');
-            this.panel.appendChild(ul);
-            this.renderLayers_(this.getMap(), ul);
-        };
-        /**
-         * Set the map instance the control is associated with.
-         * @param {ol.Map} map The map instance.
-         */
-        ol.control.LayerSwitcher.prototype.setMap = function (map) {
-            // Clean up listeners associated with the previous map
-            for (var i = 0, key = void 0; i < this.mapListeners.length; i++) {
-                this.getMap().unByKey(this.mapListeners[i]);
-            }
-            this.mapListeners.length = 0;
-            // Wire up listeners etc. and store reference to new map
-            ol.control.Control.prototype.setMap.call(this, map);
-            if (map) {
-                var this_1 = this;
-                this.mapListeners.push(map.on('pointerdown', function () {
-                    this_1.hidePanel();
-                }));
-                this.renderPanel();
-            }
-        };
-        /**
-         * Ensure only the top-most base layer is visible if more than one is visible.
-         * @private
-         */
-        ol.control.LayerSwitcher.prototype.ensureTopVisibleBaseLayerShown_ = function () {
-            var lastVisibleBaseLyr;
-            ol.control.LayerSwitcher.forEachRecursive(this.getMap(), function (l, idx, a) {
-                if (l.get('type') === 'base' && l.getVisible()) {
-                    lastVisibleBaseLyr = l;
-                }
-            });
-            if (lastVisibleBaseLyr)
-                this.setVisible_(lastVisibleBaseLyr, true);
-        };
-        /**
-         * Toggle the visible state of a layer.
-         * Takes care of hiding other layers in the same exclusive group if the layer
-         * is toggle to visible.
-         * @private
-         * @param {ol.layer.Base} The layer whos visibility will be toggled.
-         */
-        ol.control.LayerSwitcher.prototype.setVisible_ = function (lyr, visible) {
-            var map = this.getMap();
-            lyr.setVisible(visible);
-            if (visible && lyr.get('type') === 'base') {
-                // Hide all other base layers regardless of grouping
-                ol.control.LayerSwitcher.forEachRecursive(map, function (l, idx, a) {
-                    if (l != lyr && l.get('type') === 'base') {
-                        l.setVisible(false);
-                    }
-                });
-            }
-        };
-        /**
-         * Render all layers that are children of a group.
-         * @private
-         * @param {ol.layer.Base} lyr Layer to be rendered (should have a title property).
-         * @param {Number} idx Position in parent group list.
-         */
-        ol.control.LayerSwitcher.prototype.renderLayer_ = function (lyr, idx) {
-            var this_ = this;
+    Layers.prototype.initializeTree = function () {
+        var this_ = this;
+        this.baseGroup.getLayers().getArray().reverse().forEach(function (l) {
             var li = document.createElement('li');
-            var lyrTitle = lyr.get('title');
-            var lyrId = lyr.get('title').replace(' ', '-') + '_' + idx;
-            var label = document.createElement('label');
-            if (lyr.getLayers) {
-                li.className = 'group';
-                label.innerHTML = lyrTitle;
-                li.appendChild(label);
-                var ul = document.createElement('ul');
-                li.appendChild(ul);
-                this.renderLayers_(lyr, ul);
-            }
-            else {
-                var input = document.createElement('input');
-                if (lyr.get('type') === 'base') {
-                    input.type = 'radio';
-                    input.name = 'base';
+            var eye = document.createElement('i');
+            li.style.display = 'block';
+            eye.style.cursor = 'pointer';
+            eye.setAttribute('class', 'fa fa-eye pull-right');
+            li.innerHTML = l.get('title') + ' ';
+            li.appendChild(eye);
+            eye.onclick = function () {
+                this_.baseGroup.getLayers().getArray().filter(function (a) { return a.get('title') !== l.get('title'); })
+                    .forEach(function (i) {
+                    i.setVisible(false);
+                });
+                $('#base_layers').find('li i').removeClass('active-layer');
+                if (l.getVisible()) {
+                    l.setVisible(false);
+                    eye.classList.remove('active-layer');
                 }
                 else {
-                    input.type = 'checkbox';
+                    l.setVisible(true);
+                    eye.classList.add('active-layer');
                 }
-                input.id = lyrId;
-                input.checked = lyr.get('visible');
-                input.onchange = function (e) {
-                    this_.setVisible_(lyr, e.target.checked);
-                };
-                li.appendChild(input);
-                label.htmlFor = lyrId;
-                label.innerHTML = lyrTitle;
-                li.appendChild(label);
-            }
-            return li;
-        };
-        /**
-         * Render all layers that are children of a group.
-         * @private
-         * @param {ol.layer.Group} lyr Group layer whos children will be rendered.
-         * @param {Element} elm DOM element that children will be appended to.
-         */
-        ol.control.LayerSwitcher.prototype.renderLayers_ = function (lyr, elm) {
-            var lyrs = lyr.getLayers().getArray().slice().reverse();
-            for (var i = 0, l = void 0; i < lyrs.length; i++) {
-                l = lyrs[i];
-                if (l.get('title') && l.get('visibleInLayerSwitcher')) {
-                    elm.appendChild(this.renderLayer_(l, i));
-                }
-            }
-        };
-        /**
-         * **Static** Call the supplied function for each layer in the passed layer group
-         * recursing nested groups.
-         * @param {ol.layer.Group} lyr The layer group to start iterating from.
-         * @param {Function} fn Callback which will be called for each `ol.layer.Base`
-         * found under `lyr`. The signature for `fn` is the same as `ol.Collection#forEach`
-         */
-        ol.control.LayerSwitcher.forEachRecursive = function (lyr, fn) {
-            lyr.getLayers().forEach(function (lyr, idx, a) {
-                fn(lyr, idx, a);
-                if (lyr.getLayers) {
-                    ol.control.LayerSwitcher.forEachRecursive(lyr, fn);
-                }
-            });
-        };
-        var layerSwitcher = new ol.control.LayerSwitcher({
-            tipLabel: 'Layer Control'
+            };
+            $('#base_layers').css('display', 'block').append(li);
         });
-        /* END OF LAYER SWITCHER */
+        var group = this.otherGroup.getLayers().getArray().filter(function (i) { return i.get('title').startsWith('SCG'); });
+        group.reverse().forEach(function (l) {
+            var li = document.createElement('li');
+            var eye = document.createElement('i');
+            var check = document.createElement('i');
+            li.style.display = 'block';
+            eye.style.cursor = 'pointer';
+            check.style.cursor = 'pointer';
+            eye.setAttribute('class', 'fa fa-eye pull-right');
+            check.setAttribute('class', 'fa fa-check pull-right');
+            check.onclick = function () {
+                $('.current-layer').toggleClass('current-layer');
+                this_.activeLayer = {
+                    id: l.get('id'),
+                    name: l.get('title')
+                };
+                console.log(this_.activeLayer);
+                this.classList.add('current-layer');
+            };
+            li.innerHTML = l.get('title') + ' ';
+            li.appendChild(eye);
+            li.appendChild(check);
+            eye.onclick = function () {
+                if (l.getVisible()) {
+                    l.setVisible(false);
+                    eye.classList.remove('active-layer');
+                }
+                else {
+                    l.setVisible(true);
+                    eye.classList.add('active-layer');
+                }
+            };
+            $('#scg_layers').css('display', 'block').append(li);
+        });
+    };
+    Layers.prototype.mounted = function () {
+        /* LAYER SWITCHER*/
         var container = document.getElementById('popup');
         var content = document.getElementById('popup-content');
         var closer = document.getElementById('popup-closer');
-        closer.onclick = function () {
-            overlay.setPosition(undefined);
-            closer.blur();
-            return false;
-        };
         var overlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
             title: 'Popup Layer',
             element: container,
@@ -521,17 +414,7 @@ var Layers = (function (_super) {
             center: ol.proj.transform([19.01079, -33.65396], 'EPSG:4326', 'EPSG:3857'),
             zoom: 17
         });
-        this.baseGroup = new ol.layer.Group({
-            'title': 'Base Layers',
-            visibleInLayerSwitcher: true,
-            layers: []
-        });
-        this.otherGroup = new ol.layer.Group({
-            'title': 'Other Layers',
-            visibleInLayerSwitcher: true,
-            layers: []
-        });
-        var map = new ol.Map({
+        this.map = new ol.Map({
             layers: [
                 this.baseGroup,
                 this.otherGroup
@@ -541,19 +424,64 @@ var Layers = (function (_super) {
             target: 'map',
             view: view
         });
-        map.addControl(layerSwitcher);
-        this.apiLogin();
-        var li = document.querySelectorAll("#layers li");
-        for (var x = 0; x < li.length; x++) {
-            var item = li[x];
-            item.addEventListener('click', function () {
-                for (var y = 0; y < li.length; y++) {
-                    li[y].classList.remove('active');
-                    console.log('class removed');
+        var this_ = this;
+        this.map.on('singleclick', function (e) {
+            var coordinate = e.coordinate;
+            var hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
+            var xystr = ol.coordinate.toStringXY(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'), 8);
+            var lonlat = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
+            var lon = lonlat[0];
+            var lat = lonlat[1];
+            $.ajax({
+                type: "GET",
+                url: 'https://www.1map.co.za/api/v1/attributes/closest/' + this_.activeLayer.id,
+                dataType: 'json',
+                timeout: 600000,
+                data: {
+                    showAttachments: false,
+                    longitude: lon,
+                    latitude: lat,
+                    token: this_.apiToken.token
                 }
-                this.className = 'active';
+            }).done(function (response) {
+                var properties = response.result.geomResult.features[0].properties;
+                if (properties) {
+                    var thead = $('#table').find('thead');
+                    var tbody = $('#table').find('tbody');
+                    tbody.find('tr').remove();
+                    thead.find('tr').remove();
+                    var header_row = document.createElement('tr');
+                    for (var prop in properties) {
+                        if (properties.hasOwnProperty(prop)) {
+                            var th = document.createElement('th');
+                            th.classList.add('fit');
+                            th.innerHTML = prop;
+                            header_row.appendChild(th);
+                        }
+                    }
+                    thead.append(header_row);
+                    var tr = document.createElement('tr');
+                    for (var prop in properties) {
+                        if (properties.hasOwnProperty(prop)) {
+                            var td = document.createElement('td');
+                            td.classList.add('fit');
+                            td.innerHTML = properties[prop];
+                            tr.appendChild(td);
+                        }
+                    }
+                    tbody.append(tr);
+                }
+                else {
+                    alert('COULD NOT GET DATA FOR THAT POINT');
+                }
+            }).fail(function () {
             });
-        }
+        });
+        this.apiLogin();
+        $('#layer-switcher').find('li[class!="nav-header"]').click(function () {
+            $('#layer-switcher').find('li').removeClass('active');
+            $(this).addClass('active');
+        });
     };
     __decorate([
         Lifecycle

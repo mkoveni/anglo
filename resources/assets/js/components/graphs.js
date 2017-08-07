@@ -14,78 +14,83 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import Vue from "vue";
+import Highcharts from 'highcharts';
+import drilldown from 'highcharts/modules/drilldown';
+import Vue from 'vue';
 import { Component, Lifecycle } from "av-ts";
-import HighCharts from 'highcharts';
 var Graphs = (function (_super) {
     __extends(Graphs, _super);
     function Graphs() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Graphs.prototype.mounted = function () {
-        var categories = ['Brick House', 'Mud House', 'Shack'];
-        var series = [];
-        var data = [
-            {
-                name: 'Danisane',
-                data: [1, 0, 0]
-            },
-            {
-                name: 'Machikiri',
-                data: [1, 1, 0]
-            },
-            {
-                name: 'Mashehleng',
-                data: [1, 0, 1]
-            }
-        ];
-        var chart = HighCharts.chart('graph', {
+        drilldown(Highcharts);
+        Highcharts.chart('graph', {
             chart: {
                 type: 'column'
             },
             title: {
-                text: 'Type of House Graph'
+                text: 'Household reaction'
             },
             subtitle: {
-                text: 'Mogalakwena'
+                text: 'Click the columns to view the reason.'
             },
             xAxis: {
-                categories: categories
+                type: 'category',
+                title: {
+                    text: 'Reaction'
+                }
             },
             yAxis: {
-                min: 0,
                 title: {
                     text: 'Number of people'
-                },
-                stackLabels: {
-                    enabled: true,
-                    style: {
-                        fontWeight: 'bold',
-                        color: (HighCharts.theme && HighCharts.theme.textColor) || 'gray'
-                    }
                 }
             },
             legend: {
-                align: 'right',
-                x: -30,
-                verticalAlign: 'top',
-                y: 25,
-                floating: true,
-                backgroundColor: (HighCharts.theme && HighCharts.theme.background2) || 'white',
-                borderColor: '#CCC',
-                borderWidth: 1,
-                shadow: false
+                enabled: false
             },
-            plotOptions: {
-                column: {
-                    stacking: 'normal',
-                    dataLabels: {
-                        enabled: true,
-                        color: (HighCharts.theme && HighCharts.theme.dataLabelsColor) || 'white'
+            series: [{
+                    name: 'Number of people',
+                    colorByPoint: true,
+                    data: [{
+                            name: 'Participated',
+                            y: 935,
+                            drilldown: 'participated'
+                        }, {
+                            name: 'Refused',
+                            y: 526,
+                            drilldown: 'refused'
+                        }, {
+                            name: 'Inaccessible',
+                            y: 785,
+                            drilldown: 'inaccessible'
+                        }]
+                }],
+            drilldown: {
+                series: [{
+                        id: 'participated',
+                        data: [
+                            ['interested', 910],
+                            ['non-mine worker', 552]
+                        ]
+                    }, {
+                        id: 'refused',
+                        data: [
+                            ['no interest', 610],
+                            ['non-permanent residence', 732],
+                            ['mine worker', 898],
+                            ['trust issues', 425]
+                        ]
+                    }, {
+                        id: 'inaccessible',
+                        data: [
+                            ['vacant structure', 410],
+                            ['vacant demolished', 342],
+                            ['vacant abandoned', 636]
+                        ]
                     }
-                }
-            },
-            series: data
+                ]
+            }
         });
     };
     __decorate([

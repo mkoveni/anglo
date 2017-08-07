@@ -68,11 +68,11 @@ blockquote small::before {
 }
 .text-muted {color: #999;}
 .wrapper {
-	padding: 30px 0;
+	padding: 20px 0;
 }
 .footer {
 	color: #999;
-	padding: 30px 0 60px;
+	padding: 25px 3px;
 	background-color: #fff;
 }
 .footer .nav li {
@@ -194,10 +194,10 @@ body [class^="icon-"], body [class*=" icon-"] {
 	font-weight: bold;
 	font-size: 20px;
 	margin-right: 20px;
-	padding: 20px
+	padding: 0px;
 }
 .navbar .nav>li>a {
-	padding: 20px 15px;
+	padding: 25px 15px;
 	font-weight: bold;
 	color: #777
 }
@@ -262,7 +262,7 @@ box-shadow: none;
 	background: #eee;
 	border-left: 0;
 	border-right: 0;
-	height: 30px;
+	height: 20px;
 	margin: 25px 15px;
 	width: 1px
 }
@@ -270,9 +270,7 @@ box-shadow: none;
 	margin: 15px 0 0 0
 }
 .nav-user>a {
-	height: 20px
-}
-.nav-avatar {
+	height: 20px;
 	width: 34px;
 	height: 34px;
 	margin: -7px 5px 0 0;
@@ -323,7 +321,7 @@ box-shadow: none;
 	outline: 0
 }
 .btn [class^="icon-"], .btn-box [class^="icon-"], .btn [class*=" icon-"], .btn-box [class*=" icon-"] {
-	min-width: 16px;
+	min-width: 10px;
 	text-align: center;
 	display: inline-block!important
 }
@@ -332,60 +330,66 @@ box-shadow: none;
 	font-weight: 600
 }
 .btn.btn-mini, .btn.btn-small {
-	font-size: 11px
+	font-size: 11px;
+
 }
 .btn.btn-large {
 	font-size: 16px
 }
 .btn-box {
-	margin-bottom: 20px;
-background-color: #fff;
+background-color: #D91A3B;
 border: 1px solid transparent;
-border-radius: 4px;
+border-radius: 2px;
 -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
 box-shadow: 0 1px 1px rgba(0,0,0,.05);
-
-
-
-	text-align: center;
-	text-decoration: none!important;
-	padding: 25px 0;
-	margin: 0 0 30px
+text-align: center;
+text-decoration: none!important;
+padding: 20px 0px;
+margin: 0 0 10px;
+margin-top: 0px;
 }
+
+.btn-box hr{
+	background-color: #002a80;
+}
+
 .btn-box i, .btn-box b {
 	display: block
 }
 .btn-box b {
 	color: #444;
-	font-size: 20px;
+	font-size: 30px;
 	font-weight:normal;
 	margin-top: 5px;
 	text-shadow: 0 1px 0 #fff
 }
 .btn-box i {
-	font-size: 36px;
-	line-height: 36px;
-	height: 36px;
-	color: #29b7d3;
+	font-size: 48px;
+	line-height: 60px;
+	height: 25px;
+	color: white;
+	margin-top: 5px;
 	-webkit-transition: all .2s ease-in-out;
 -moz-transition: all .2s ease-in-out;
 transition: all .2s ease-in-out;
 }
 .btn-box.big b {
-	margin-top: 10px
+	margin-bottom: 10px;
 }
 .btn-box.big i {
-	font-size: 48px;
-	line-height: 48px;
-	height: 48px
+	font-size: 20px;
+	line-height: 20px;
+	height: 30px
 }
 .btn-box.small b {
-	font-size: 11px
+	font-size: 15px;
+	margin-top: 10px;
+	color: white;
 }
 .btn-box.small i {
-	font-size: 24px;
+	font-size: 40px;
 	line-height: 24px;
-	height: 24px
+	height: 5px;
 }
 .btn-box:hover i {
 	color: rgba(0,0,0,0.4);
@@ -419,10 +423,7 @@ transition: all .2s ease-in-out;
 	font-size: 13px
 }
 
-
-
 /* Buttons */
-
 
 .btn {
 	display: inline-block;
@@ -643,10 +644,6 @@ transition: all .2s ease-in-out;
 input[type=button].btn-block, input[type=reset].btn-block, input[type=submit].btn-block {
 	width: 100%
 }
-
-
-
-
 
 .modal {
 	-webkit-border-radius: 4px;
@@ -1114,7 +1111,7 @@ border-top-left-radius: 3px;
 	padding: 0
 }
 .stream.new-update a, .stream.load-more a {
-	background: #background: #f7f7f7;;
+	background: #f7f7f7;;
 	
 	color: #555;
 	font-weight: 600;

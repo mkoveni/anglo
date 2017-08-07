@@ -26,4 +26,14 @@ class ReportingController extends Controller
     {
         return $this->view->render($response, 'graphs/graphs.twig');
     }
+
+    public function getOverview(Response $response)
+    {
+        return $this->view->render($response, 'overallsummary.twig');
+    }
+
+    public function getOverall(Response $response)
+    {
+        return $this->view->render($response, 'dashboard.twig');
+    }
 }

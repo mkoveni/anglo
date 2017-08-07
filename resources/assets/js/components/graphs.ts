@@ -1,82 +1,85 @@
-
-import  Vue from "vue";
+import Highcharts from 'highcharts'
+import drilldown from 'highcharts/modules/drilldown'
+import Vue from 'vue'
 import {Component, Lifecycle} from "av-ts"
-import HighCharts from 'highcharts'
 
 @Component
-export default class Graphs extends Vue
-{
+export default class Graphs extends Vue{
+
     @Lifecycle mounted(){
 
-        let categories = ['Brick House', 'Mud House','Shack'];
+        drilldown(Highcharts)
 
-        let series = [];
-
-        let data = [
-            {
-                name:'Danisane',
-                data:[1,0,0]
-            },
-            {
-                name:'Machikiri',
-                data:[1,1,0]
-            },
-            {
-                name:'Mashehleng',
-                data:[1,0,1]
-            }
-        ]
-
-
-
-        var chart = HighCharts.chart('graph', {
+        Highcharts.chart('graph', {
             chart: {
                 type: 'column'
             },
             title: {
-                text: 'Type of House Graph'
+                text: 'Household reaction'
             },
-
-            subtitle:{
-                text: 'Mogalakwena'
+            subtitle: {
+                text: 'Click the columns to view the reason.'
             },
             xAxis: {
-                categories: categories
+                type: 'category',
+
+                title: {
+                    text: 'Reaction'
+                }
             },
-            yAxis:{
-                min:0,
+            yAxis: {
                 title: {
                     text: 'Number of people'
-                },
-                stackLabels: {
-                    enabled: true,
-                    style: {
-                        fontWeight: 'bold',
-                        color: (HighCharts.theme && HighCharts.theme.textColor) || 'gray'
-                    }
                 }
+
             },
             legend: {
-                align: 'right',
-                x: -30,
-                verticalAlign: 'top',
-                y: 25,
-                floating: true,
-                backgroundColor: (HighCharts.theme && HighCharts.theme.background2) || 'white',
-                borderColor: '#CCC',
-                borderWidth: 1,
-                shadow: false
+                enabled: false
             },
-            plotOptions: {
-                column: {
-                    stacking: 'normal',
-                    dataLabels: {
-                        enabled: true,
-                        color: (HighCharts.theme && HighCharts.theme.dataLabelsColor) || 'white'
-                    }
+            series: [{
+                name: 'Number of people',
+                colorByPoint: true,
+                data: [{
+                    name: 'Participated',
+                    y: 935,
+                    drilldown: 'participated'
+                }, {
+                    name: 'Refused',
+                    y: 526,
+                    drilldown: 'refused'
+                }, {
+                    name: 'Inaccessible',
+                    y: 785,
+                    drilldown: 'inaccessible'
+                }]
+            }],
+            drilldown: {
+                series: [{
+                    id: 'participated',
+                    data: [
+                        ['interested',910],
+                        [ 'non-mine worker',552]
+                    ]
+                }, {
+                    id: 'refused',
+                    data: [
+                        ['no interest',610],
+                        [ 'non-permanent residence', 732],
+                        ['mine worker', 898],
+                        ['trust issues', 425]
+                    ]
+                }, {
+                    id: 'inaccessible',
+                    data: [
+                        ['vacant structure',410],
+                        [ 'vacant demolished',342],
+                        ['vacant abandoned', 636]
+                    ]
                 }
-            },
-            series: data
-        })
+                ]
+            }
+        });
+
     }
+
 }
